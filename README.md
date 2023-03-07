@@ -16,13 +16,11 @@ This project is a 2D platformer game developed using Unity. It includes various 
 
 ## Usage
 
-The game includes the following mechanics:
+Turn on the mechanics following at Hierarchy the object Singletons/GameProgress:
 
-- Double jumping
-- Gliding
-- Wall jumping
-- Moving platforms
-- Unstable platforms that break under pressure
+- Double jumping - Boolean
+- Wall jumping - Boolean
+- Gliding - Boolean
 
 ## Code Architecture
 
