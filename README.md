@@ -8,6 +8,10 @@
 
 This project is a 2D platformer game developed using Unity. It includes various game development and architecture concepts such as Singleton and Listening design patterns. It also utilizes code architecture that uses C# delegate functions to centralize commands such as jumping, life updates, and more. The game includes mechanics such as double jumping, gliding, wall jumping, moving platforms, and unstable platforms that break under pressure. The project also have a Parallax Effect using layers of background sprite.
 
+<p align="center">
+  <img src="https://live.staticflickr.com/65535/52734593959_2e78b2c599_b.jpg" style="width: 80%" />
+</p>
+
 ## Getting Started
 
 1. Clone the repository
