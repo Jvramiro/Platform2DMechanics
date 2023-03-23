@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using SingletonExtensions;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -10,12 +11,12 @@ public class PlayerHealth : MonoBehaviour
     public int health;
 
     void OnEnable(){
-        interactions.UpdateHealth += UpdateHealth;
-        interactions.Death += DestroyPlayer;
+        SingletonExtension.GetInteractions().UpdateHealth += UpdateHealth;
+        SingletonExtension.GetInteractions().Death += DestroyPlayer;
     }
     void OnDisable(){
-        interactions.UpdateHealth -= UpdateHealth;
-        interactions.Death -= DestroyPlayer;
+        Interactions.Singleton.UpdateHealth -= UpdateHealth;
+        Interactions.Singleton.Death -= DestroyPlayer;
     }
 
     void UpdateHealth(int quantity){

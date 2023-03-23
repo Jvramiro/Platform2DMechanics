@@ -1,17 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SingletonExtensions;
 
 public class PlayerAnimation : MonoBehaviour
 {
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Animator anim;
     [SerializeField] private SpriteRenderer sprite;
-    [SerializeField] private Interactions interactions;
     private float checkxAxys;
 
-    void OnEnable() => interactions.Jump += Jump;
-    void OnDisable() => interactions.Jump -= Jump;
+    void OnEnable() => SingletonExtension.GetInteractions().Jump += Jump;
+    void OnDisable() => Interactions.Singleton.Jump -= Jump;
 
     void Update(){
         if(checkxAxys != playerMovement.getMovement.x){

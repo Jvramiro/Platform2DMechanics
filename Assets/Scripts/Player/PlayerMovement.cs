@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleDialogN;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
         //
 
         //If isPause is false
-        if(PauseSystem.Singleton.CheckIsPause){ return; }
+        if(CheckPause()){ return; }
         
         CheckMovement();
         CheckJump();
@@ -167,6 +168,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     void FixedUpdate(){
+
+        if(CheckPause()){ return; }
+        
         if(!isWallJumping){
             rgb.velocity = new Vector2(movement.x * playerVelocity * Time.fixedDeltaTime, rgb.velocity.y);
         }
@@ -176,6 +180,20 @@ public class PlayerMovement : MonoBehaviour
         afterWallJump = true;
         yield return new WaitForSeconds(0.15f);
         afterWallJump = false;
+    }
+
+    bool CheckPause(){
+        if(PauseSystem.Singleton.CheckIsPause){
+            return true;
+        }
+        else if(DialogCommands.IsDialogActive()){
+            if(movement != Vector2.zero){
+                rgb.velocity = Vector2.zero;
+                movement = Vector2.zero;
+            }
+            return true;
+        }
+        return false;
     }
 
     void OnDrawGizmosSelected(){

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using SingletonExtensions;
 
 public class PlayerCollider : MonoBehaviour
 {
@@ -10,8 +11,8 @@ public class PlayerCollider : MonoBehaviour
     [SerializeField] private Transform playerPosition;
     [SerializeField] private Vector2 knockbackForce = new Vector2(1200,300);
     [SerializeField] private float intangibleTime = 1f;
-    void OnEnable() => interactions.Knockback += Knockback;
-    void OnDisable() => interactions.Knockback -= Knockback;
+    void OnEnable() => SingletonExtension.GetInteractions().Knockback += Knockback;
+    void OnDisable() => Interactions.Singleton.Knockback -= Knockback;
     private bool isIntangible = false;
     void OnTriggerEnter2D(Collider2D col){
         if(col.CompareTag("Hit") && !isIntangible){
