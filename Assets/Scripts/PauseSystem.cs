@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PauseSystem : MonoBehaviour
 {
+    private InputActionsControl input;
+
     public static PauseSystem Singleton;
+
     void Awake() {
         if (Singleton != null && Singleton != this){
             Destroy(this.gameObject);
@@ -13,10 +17,25 @@ public class PauseSystem : MonoBehaviour
             Singleton = this;
             DontDestroyOnLoad(this.gameObject);
         }
+
+        input = new InputActionsControl();
     }
 
     private bool isPaused = false;
     public bool CheckIsPause{get{return isPaused;}}
+
+    void OnEnable(){
+        input.PlayerMap.Pause.started += PauseButton;
+        input.PlayerMap.Pause.Enable();
+    }
+
+    #region Input Section
+
+    void PauseButton(InputAction.CallbackContext context){
+        SwitchPauseGame();
+    }
+
+    #endregion
 
     public void PauseGame(){
         isPaused = true;
@@ -30,12 +49,6 @@ public class PauseSystem : MonoBehaviour
     public void SwitchPauseGame(){
         isPaused = !isPaused;
         PauseUpdates();
-    }
-
-    void Update(){
-        if(Input.GetKeyDown(KeyCode.P)){
-            SwitchPauseGame();
-        }
     }
 
     void PauseUpdates(){

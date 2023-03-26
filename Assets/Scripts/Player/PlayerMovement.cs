@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SimpleDialogN;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+    //Movement Inputs
+    private InputActionsControl input;
+    private InputAction i_movement;
+    private bool isPressingJump;
+
     private Rigidbody2D rgb;
     private Vector2 movement;
     private float jumpTimeCounter;
@@ -27,6 +33,50 @@ public class PlayerMovement : MonoBehaviour
     private int direction = 1;
     private bool afterWallJump = false;
 
+    void Awake(){
+        input = new InputActionsControl();
+    }
+
+    void OnEnable(){
+        i_movement = input.PlayerMap.Movement;
+        i_movement.Enable();
+        input.PlayerMap.Jump.started += JumpStarted;
+        input.PlayerMap.Jump.canceled += JumpCanceled;
+        input.PlayerMap.Jump.Enable();
+    }
+
+    #region Input Section
+
+    void JumpStarted(InputAction.CallbackContext context){
+        isPressingJump = true;
+        
+        if(coyoteTimeCounter > 0f){
+            Jump();
+        }
+
+        if(GameProgress.Singleton.WallJump){
+            WallJump();
+        }
+        //Double After Wall
+        if(!GameProgress.Singleton.DoubleJump){ 
+            DoubleJump();
+        }
+        
+    }
+
+    void JumpCanceled(InputAction.CallbackContext context){
+        isPressingJump = false;
+        
+        isJumping = false;
+        coyoteTimeCounter = 0f;
+    }
+
+    bool InputIsJumping(){
+        return isPressingJump;
+    }
+
+    #endregion
+
     void Start(){
         rgb = GetComponent<Rigidbody2D>();
     }
@@ -41,17 +91,14 @@ public class PlayerMovement : MonoBehaviour
         CheckMovement();
         CheckJump();
         WallSlide();
-        WallJump();
-        //After Wall Jump because boolean afterWallJump
-        DoubleJump();
-
         Glide();
+        GravityUpdate();
 
     }
 
     void CheckMovement(){
         if(!isWallJumping){
-            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.x = input.PlayerMap.Movement.ReadValue<Vector2>().x;
         }
         direction = rightSide ? 1 : -1;
 
@@ -71,24 +118,19 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime;
         }
 
-        if(coyoteTimeCounter > 0f && Input.GetKeyDown(KeyCode.X)){
-            Jump();
-        }
-        if(Input.GetKey(KeyCode.X) && isJumping == true){
-            if(jumpTimeCounter > 0){
-                rgb.velocity = Vector2.up * playerJump;
-                jumpTimeCounter -= Time.deltaTime;
-            }
-            else{
-                isJumping = false;
-            }
-        }
-        if(Input.GetKeyUp(KeyCode.X)){
-            isJumping = false;
-            coyoteTimeCounter = 0f;
-        }
-
         if(isGrounded && jumpCounter > 0){jumpCounter = 0;}
+
+        if(InputIsJumping()){
+            if(isJumping == true){
+                if(jumpTimeCounter > 0){
+                    rgb.velocity = Vector2.up * playerJump;
+                    jumpTimeCounter -= Time.deltaTime;
+                }
+                else{
+                    isJumping = false;
+                }
+            }
+        }
     }
 
     void Jump(){
@@ -97,6 +139,17 @@ public class PlayerMovement : MonoBehaviour
         jumpTimeCounter = jumpTime;
         rgb.velocity = Vector2.up * playerJump;
         Interactions.Singleton.Jump();
+    }
+
+    void GravityUpdate(){
+
+        /*if(isGrounded || isWallSliding || isWalled || isWallJumping){
+            rgb.gravityScale = 1.5f;
+        }
+        else if(!isJumping){
+            rgb.gravityScale = 3.5f;
+        }*/
+
     }
 
     void WallSlide(){
@@ -112,10 +165,6 @@ public class PlayerMovement : MonoBehaviour
         else{
             isWallSliding = false;
         }
-    }
-
-    void WallJump(){
-        if(!GameProgress.Singleton.WallJump){ return; }
 
         if(isWallSliding){
             wallJumpingDirection = rightSide ? -1 : 1;
@@ -126,7 +175,10 @@ public class PlayerMovement : MonoBehaviour
                 wallJumpingCounter -= Time.deltaTime;
             }
         }
-        if(Input.GetKeyDown(KeyCode.X) && wallJumpingCounter > 0f){
+    }
+
+    void WallJump(){
+        if(wallJumpingCounter > 0f){
             rgb.velocity = Vector2.zero;
             movement.x = wallJumpingDirection;
 
@@ -141,15 +193,13 @@ public class PlayerMovement : MonoBehaviour
             jumpCounter++;
             Interactions.Singleton.Jump();
             StartCoroutine(ActiveAfterWallJump());
-
-            //Debug.Log("WallJump");
         }
     }
 
     void Glide(){
-        if(!GameProgress.Singleton.Glide){ return; }
+        if(!InputIsJumping() || !GameProgress.Singleton.Glide){ return; }
 
-        if(Input.GetKey(KeyCode.X) && !isGrounded && !isWallSliding){
+        if(!isGrounded && !isWallSliding){
             rgb.velocity = new Vector2(rgb.velocity.x, Mathf.Clamp(rgb.velocity.y, -playerGlider, float.MaxValue));
         }
     }
@@ -158,10 +208,8 @@ public class PlayerMovement : MonoBehaviour
         isWallJumping = false;
     }
 
-    void DoubleJump(){
-        if(!GameProgress.Singleton.DoubleJump){ return; }
-        
-        if(Input.GetKeyDown(KeyCode.X) && !isGrounded && jumpCounter < maxJumps && !isWallSliding && !afterWallJump){
+    void DoubleJump(){        
+        if(!isGrounded && jumpCounter < maxJumps && !isWallSliding && !afterWallJump){
             Jump();
             //Debug.Log($"DoubleJump isWallSliding {isWallSliding} isWalled {isWalled}");
         }

@@ -22190,7 +22190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerVelocity: 180
   playerJump: 2.5
-  jumpTime: 0.3
+  jumpTime: 0.4
   playerSlider: 1
   playerGlider: 1
   wallJumpingPower: {x: 4.5, y: 5}
