@@ -22222,7 +22222,7 @@ Rigidbody2D:
   m_Material: {fileID: 6200000, guid: 1b8f3e1dc24236c42a02ed777be0fa65, type: 2}
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!4 &4061855902166987279
 Transform:

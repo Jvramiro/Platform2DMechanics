@@ -143,12 +143,12 @@ public class PlayerMovement : MonoBehaviour
 
     void GravityUpdate(){
 
-        /*if(isGrounded || isWallSliding || isWalled || isWallJumping){
+        if(isGrounded || isWallSliding || isWalled || isWallJumping){
             rgb.gravityScale = 1.5f;
         }
         else if(!isJumping){
-            rgb.gravityScale = 3.5f;
-        }*/
+            rgb.gravityScale = 2.5f;
+        }
 
     }
 
