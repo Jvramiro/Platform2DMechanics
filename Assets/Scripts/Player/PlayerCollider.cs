@@ -15,6 +15,11 @@ public class PlayerCollider : MonoBehaviour
     void OnDisable() => Interactions.Singleton.Knockback -= Knockback;
     private bool isIntangible = false;
     void OnTriggerEnter2D(Collider2D col){
+
+        if(!col.isTrigger && !col.GetComponent<PlatformEffector2D>()){
+            playerMovement.StopLongJump();
+        }
+
         if(col.CompareTag("Hit") && !isIntangible){
 
             Vector3 colPoint = new Vector3();

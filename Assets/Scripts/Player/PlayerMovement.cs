@@ -96,6 +96,15 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
+    void FixedUpdate(){
+
+        if(CheckPause()){ return; }
+        
+        if(!isWallJumping){
+            rgb.velocity = new Vector2(movement.x * playerVelocity * Time.fixedDeltaTime, rgb.velocity.y);
+        }
+    }
+
     void CheckMovement(){
         if(!isWallJumping){
             movement.x = input.PlayerMap.Movement.ReadValue<Vector2>().x;
@@ -133,6 +142,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void StopLongJump(){
+        isJumping = false;
+    }
+
     void Jump(){
         jumpCounter++;
         isJumping = true;
@@ -156,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
         if(!GameProgress.Singleton.WallJump){ return; }
 
         Vector3 wallPosition = new Vector3(transform.position.x + (checkWallMoreX * direction), transform.position.y, transform.position.z);
-        isWalled = Physics2D.OverlapCircle(wallPosition, checkGroundRadius, groundLayer);
+        isWalled = Physics2D.OverlapCircle(wallPosition, checkWallRadius, groundLayer);
 
         if(isWalled && !isGrounded && movement.x != 0){
             isWallSliding = true;
@@ -215,15 +228,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void FixedUpdate(){
-
-        if(CheckPause()){ return; }
-        
-        if(!isWallJumping){
-            rgb.velocity = new Vector2(movement.x * playerVelocity * Time.fixedDeltaTime, rgb.velocity.y);
-        }
-    }
-
     IEnumerator ActiveAfterWallJump(){
         afterWallJump = true;
         yield return new WaitForSeconds(0.15f);
@@ -251,6 +255,8 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 wallPosition = new Vector3(transform.position.x + (checkWallMoreX * direction), transform.position.y, transform.position.z);
         Gizmos.DrawSphere(wallPosition, checkWallRadius);
+
+
     }
 
 
