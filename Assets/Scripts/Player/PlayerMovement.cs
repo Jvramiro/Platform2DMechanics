@@ -45,6 +45,11 @@ public class PlayerMovement : MonoBehaviour
         input.PlayerMap.Jump.Enable();
     }
 
+    void OnDisable(){
+        input.PlayerMap.Jump.started -= JumpStarted;
+        input.PlayerMap.Jump.canceled -= JumpCanceled;
+    }
+
     #region Input Section
 
     void JumpStarted(InputAction.CallbackContext context){
